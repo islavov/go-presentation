@@ -1,11 +1,11 @@
 package main
 
 import (
-	"net"
-	"fmt"
 	"bufio"
-	"strings"
+	"fmt"
 	"math"
+	"net"
+	"strings"
 )
 
 var SURRENDER = -1
@@ -16,11 +16,10 @@ var SCISSORS = 2
 
 const MSG_WEAPON = "Choose your weapon (1: rock, 2:paper, 3:scissors): "
 
-const STATE_NEW= "new"
+const STATE_NEW = "new"
 const STATE_JOINED = "joined"
 const STATE_WAITING = "waiting"
-const STATE_PLAYING= "playing"
-
+const STATE_PLAYING = "playing"
 
 type Player struct {
 	name    string
@@ -57,7 +56,7 @@ func msgPlayers(msg string, players ...*Player) {
 }
 
 func handleAction(player *Player, action string) *int {
-	switch action{
+	switch action {
 	case "1":
 		return &ROCK
 	case "2":
@@ -76,7 +75,7 @@ func gameLogic(decision1 int, decision2 int) bool {
 	if decision1 == decision2 {
 		return false
 	}
-	if math.Mod(float64(decision1 + 3) - float64(decision2), 3) == 1 {
+	if math.Mod(float64(decision1+3)-float64(decision2), 3) == 1 {
 		return true
 	}
 	return false
@@ -98,8 +97,7 @@ func startMatch(game *Game, player1 *Player, player2 *Player) {
 			var winner *Player
 			var loser *Player
 
-
-			if (decision1 != nil && decision2 != nil) {
+			if decision1 != nil && decision2 != nil {
 				if *decision1 == SURRENDER {
 					winner = player2
 				} else if *decision2 == SURRENDER {
@@ -144,7 +142,7 @@ func (game *Game) cmdloop() {
 			action.player.state = STATE_JOINED
 			game.players = append(game.players, action.player)
 		case "removePlayer":
-			if (action.player.state == STATE_PLAYING) {
+			if action.player.state == STATE_PLAYING {
 				action.player.action <- fmt.Sprintf("%d", SURRENDER)
 			}
 			if action.player == waiting {
@@ -153,7 +151,7 @@ func (game *Game) cmdloop() {
 			for idx, player := range game.players {
 				if player == action.player {
 					fmt.Printf("Leaving: %s\n", action.player.name)
-					game.players = append(game.players[:idx], game.players[idx + 1:]...)
+					game.players = append(game.players[:idx], game.players[idx+1:]...)
 					break
 				}
 			}
@@ -170,8 +168,8 @@ func (game *Game) cmdloop() {
 				waiting.message <- msg
 				action.player.message <- msg
 
-				waiting.state= STATE_PLAYING
-				action.player.state= STATE_PLAYING
+				waiting.state = STATE_PLAYING
+				action.player.state = STATE_PLAYING
 
 				go startMatch(game, action.player, waiting)
 				waiting = nil
@@ -185,19 +183,19 @@ func (game *Game) cmdloop() {
 }
 
 func (game *Game) addPlayer(player *Player) {
-	game.actions <- Action{player:player, action: "addPlayer", param:""}
+	game.actions <- Action{player: player, action: "addPlayer", param: ""}
 }
 
 func (game *Game) removePlayer(player *Player) {
-	game.actions <- Action{player:player, action: "removePlayer", param:""}
+	game.actions <- Action{player: player, action: "removePlayer", param: ""}
 }
 
 func (game *Game) startMatch(player *Player) {
-	game.actions <- Action{player:player, action: "startMatch", param:""}
+	game.actions <- Action{player: player, action: "startMatch", param: ""}
 }
 
 func (game *Game) endMatch(player *Player, param string) {
-	game.actions <- Action{player:player, action: "endMatch", param:param}
+	game.actions <- Action{player: player, action: "endMatch", param: param}
 }
 
 func serve(conn net.Conn, game *Game) error {
@@ -224,7 +222,7 @@ func serve(conn net.Conn, game *Game) error {
 	game.startMatch(player)
 
 	for {
-		if (player.state == STATE_JOINED) {
+		if player.state == STATE_JOINED {
 			game.startMatch(player)
 		}
 		message, err := reader.ReadString('\n')
@@ -239,8 +237,6 @@ func serve(conn net.Conn, game *Game) error {
 		}
 
 	}
-
-	return nil
 }
 
 func main() {
