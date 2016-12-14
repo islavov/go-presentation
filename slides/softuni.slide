@@ -188,7 +188,11 @@ int и uint са най-ефективния или естествен разм�
 
 * Package management, etc.
 
-* Go tools
+* Go tools (compiler, go doc, go fmt, etc)
+
+* 3rd party/open source Go tools (profiling with flamegraphs, etc)
+
+* Performance (benchmarks)
 
 * Development setup
 
