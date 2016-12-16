@@ -18,6 +18,13 @@ dido@uber.com
 - Ефикасен модел на конкурентност
 - Алтернатива на динамични скриптови езици с добавена сигурност на статичната типизация
 
+* Защо да пиша на Gо, а не на (постави език тук)
+- малък, идиоматичен и експресивен език
+- duck typing
+- gofmt
+- конкурентност
+- static linking
+
 * История
 - 2007г: създаден като експеримент в Google през 2007г. от Robert Griesemer, Rob Pike, Ken Thompson.
 - Не им харесва C++
@@ -225,7 +232,44 @@ int и uint са най-ефективния или естествен разм�
 
 * Стандартна библиотека
 
-* Сериализация (JSON)
+- time
+- io
+- log
+- net и net/http
+- os
+- path
+
+.caption Пълен списък на [[https://golang.org/pkg/][https://golang.org/pkg/]]
+
+* Инструменти
+
+	$ go
+	Go is a tool for managing Go source code.
+
+	Usage:
+
+			go command [arguments]
+
+	The commands are:
+
+			build       compile packages and dependencies
+			clean       remove object files
+			doc         show documentation for package or symbol
+			env         print Go environment information
+			fix         run go tool fix on packages
+			fmt         run gofmt on package sources
+			generate    generate Go files by processing source
+			get         download and install packages and dependencies
+			install     compile and install packages and dependencies
+			list        list packages
+			run         compile and run Go program
+			test        test packages
+			tool        run specified go tool
+			version     print Go version
+			vet         run go tool vet on packages
+
+	Use "go help [command]" for more information about a command.
+
 
 * Package management, etc.
 

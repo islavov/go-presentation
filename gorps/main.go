@@ -21,6 +21,13 @@ const STATE_JOINED = "joined"
 const STATE_WAITING = "waiting"
 const STATE_PLAYING = "playing"
 
+var MSG_MAP = map[int]string{
+	-1: "surrender",
+	0: "rock",
+	1: "paper",
+	2: "scissors",
+}
+
 type Player struct {
 	name    string
 	state   string
@@ -98,6 +105,13 @@ func startMatch(game *Game, player1 *Player, player2 *Player) {
 			var loser *Player
 
 			if decision1 != nil && decision2 != nil {
+				choices := fmt.Sprintf(
+					"%s chose %s and %s chose %s...\n",
+					player1.name, MSG_MAP[*decision1],
+					player2.name, MSG_MAP[*decision2],
+				)
+				msgPlayers(choices, player1, player2)
+
 				if *decision1 == SURRENDER {
 					winner = player2
 				} else if *decision2 == SURRENDER {
@@ -109,7 +123,9 @@ func startMatch(game *Game, player1 *Player, player2 *Player) {
 					winner = player2
 					loser = player1
 				} else {
-					msgPlayers("DRAW", player1, player2)
+					msgPlayers("Its a TIE...\n", player1, player2)
+					msgPlayers(MSG_WEAPON, player1, player2)
+
 					decision1 = nil
 					decision2 = nil
 				}
@@ -243,6 +259,7 @@ func main() {
 	game := NewGame()
 	listener, err := net.Listen("tcp", ":8080")
 
+	fmt.Println("Listening on", listener.Addr())
 	if err != nil {
 		panic(err)
 	}
