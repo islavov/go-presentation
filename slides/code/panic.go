@@ -2,8 +2,9 @@ package main
 
 import "fmt"
 
+// START OMIT
 func amapanic() {
-	panic("Това не трябва да се случва")
+	panic("Това не трябва да се случва") // HL
 }
 
 func causepanic() {
@@ -11,10 +12,12 @@ func causepanic() {
 		fmt.Println("Отложените функции се изпълняват")
 	}()
 	fmt.Println("Съобщение 1")
-	amapanic()
+	amapanic() // HL
 	fmt.Println("Съобщение 2")
 }
 
 func main() {
 	causepanic()
 }
+
+// END OMIT
