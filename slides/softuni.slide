@@ -29,12 +29,12 @@ dido@uber.com
 .image assets/renee.png _ 300
 
 * Защо да пиша на Gо, а не на (постави език тук)
-- малък, идиоматичен и експресивен език
-- duck typing
+- Малък, идиоматичен и експресивен език
+- Duck typing
 - gofmt
-- конкурентност
-- static linking
-- бърза компилация
+- Конкурентност
+- Static linking
+- Бърза компилация
 
 * Compiling
 
