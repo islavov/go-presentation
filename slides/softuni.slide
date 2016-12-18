@@ -498,15 +498,6 @@ int и uint са най-ефективния или естествен разм�
 - Няма стандартен мениджър на зависимости и версиите им
 - Godep, Glide, Govendor, godm, vexp, gv, govend, Vendetta, trash, gsv, gom, manul
 
-
-* Go tools (compiler, go doc, go fmt, etc)
-
-* 3rd party/open source Go tools (profiling with flamegraphs, etc)
-
-* Performance (benchmarks)
-
-* Development setup
-
 * Мотики
 
 .image assets/motika.jpg _ 600
