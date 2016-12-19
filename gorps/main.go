@@ -8,18 +8,28 @@ import (
 	"./rps"
 )
 
+func readPlayerName(reader bufio.Reader, writer bufio.Writer) string {
+	for {
+		writer.Write([]byte("Enter player name: "))
+		writer.Flush()
+		name, _ := reader.ReadString('\n')
+		name = strings.TrimSpace(name)
+		if name != "" {
+			return name
+		}
+	}
+
+}
+
 func serve(conn net.Conn, game *rps.Game) error {
 	defer conn.Close()
 
 	fmt.Printf("%+v\n", conn.RemoteAddr())
 	reader := bufio.NewReader(conn)
 	writer := bufio.NewWriter(conn)
-	writer.Write([]byte("Enter player name: "))
-	writer.Flush()
 
-	name, _ := reader.ReadString('\n')
-
-	player := rps.NewPlayer(strings.TrimSpace(name))
+	name := readPlayerName(reader, writer)
+	player := rps.NewPlayer(name)
 	game.AddPlayer(player)
 
 	go func() {
@@ -44,9 +54,6 @@ func serve(conn net.Conn, game *rps.Game) error {
 	game.StartMatch(player)
 
 	for {
-		if player.State == rps.STATE_JOINED {
-			game.StartMatch(player)
-		}
 		message, err := reader.ReadString('\n')
 		if player.State == rps.STATE_PLAYING && message != "" {
 			player.Act(message)

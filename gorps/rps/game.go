@@ -20,12 +20,13 @@ type Game struct {
 	actions chan Action
 	players []*Player
 	waiting *Player
+	scoreBoard map[string]int
 }
 
 
 // NewGame starts a new game
 func NewGame() *Game {
-	var game = Game{players: []*Player{}, actions: make(chan Action)}
+	var game = Game{players: []*Player{}, actions: make(chan Action), scoreBoard:map[string]int{}}
 	go game.cmdloop()
 	return &game
 }
@@ -113,10 +114,25 @@ func (game Game) StartMatch(player *Player) {
 
 // endMatch handles request to end a new match
 func (game *Game) endMatch(action Action) {
-	action.player.WriteMsg(fmt.Sprintf("You %s. Press any key to continue.\n", action.param))
-	action.player.State = STATE_JOINED
+	action.player.WriteMsg(fmt.Sprintf("You %s \n", action.param))
+	if action.param == "win" {
+		if _, found := game.scoreBoard[action.player.Name]; !found {
+			 game.scoreBoard[action.player.Name] = 0
+		}
+		game.scoreBoard[action.player.Name] += 1
+		game.printScore()
+	}
+	game.startMatch(action)
+
 }
 // EndMatch ends a match
 func (game Game) EndMatch(player *Player, param string) {
 	game.actions <- Action{player: player, action: endMatch, param: param}
+}
+
+func (game *Game) printScore() {
+	fmt.Println("Player | Wins")
+	for key, value := range game.scoreBoard {
+		fmt.Println(key, " | ", value)
+	}
 }
