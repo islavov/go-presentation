@@ -3,21 +3,21 @@ package main
 import "fmt"
 
 // START OMIT
-func amapanic() {
-	panic("Това не трябва да се случва") // HL
+func checkChristmasTree() {
+	panic("Елхата гори. Това не трябва да се случва") // HL
 }
 
-func causepanic() {
+func findPresents() {
 	defer func() {
-		fmt.Println("Отложените функции се изпълняват")
+		fmt.Println("Излизаш от стаята")
 	}()
-	fmt.Println("Съобщение 1")
-	amapanic() // HL
-	fmt.Println("Съобщение 2")
+	fmt.Println("Влизаш в стаята")
+	checkChristmasTree() // HL
+	fmt.Println("Отваряш подаръците")
 }
 
 func main() {
-	causepanic()
+	findPresents()
 }
 
 // END OMIT

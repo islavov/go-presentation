@@ -440,6 +440,7 @@ int и uint са най-ефективния или естествен разм�
 - os
 - path
 - sync
+- unsafe
 
 .caption Пълен списък на [[https://golang.org/pkg/][https://golang.org/pkg/]]
 
@@ -461,11 +462,7 @@ int и uint са най-ефективния или естествен разм�
 
 	$ go
 	Go is a tool for managing Go source code.
-
-	Usage:
-
-			go command [arguments]
-
+	...
 	The commands are:
 
 			build       compile packages and dependencies

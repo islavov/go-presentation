@@ -3,19 +3,19 @@ package main
 import "fmt"
 
 // START OMIT
-func openbox() {
-	fmt.Println("А wild spider appears")
-	panic("Start panicking") // HL
+func openPresent() {
+	fmt.Println("В кутията има огромен паяк")
+	panic("Настава паника")
 }
 
 func main() {
 	defer func() {
 		if r := recover(); r != nil { // HL
 			fmt.Println(r)
-			fmt.Println("Used a slipper. It was very effective.")
+			fmt.Println("Използваш чехъл.")
 		}
 	}()
-	openbox() // HL
+	openPresent()
 }
 
 // END OMIT
