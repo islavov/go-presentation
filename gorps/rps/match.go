@@ -19,11 +19,18 @@ var MSG_MAP = map[int]string{
 	2: "scissors",
 }
 
+var ACT_MAP = map[string]int {
+	"": SURRENDER,
+	"-1": SURRENDER,
+	"1": ROCK,
+	"2": PAPER,
+	"3": SCISSORS,
+}
 
 // msgPlayers messages all players with a message
 func msgPlayers(msg string, players ...*Player) {
 	for _, player := range players {
-		player.Msg(msg)
+		player.WriteMsg(msg)
 	}
 }
 
@@ -43,20 +50,14 @@ func NewMatch(game *Game, player1 *Player, player2 *Player) *Match {
 
 // handleUserAction handles a player
 func (m Match) handlePlayerAction(player *Player, action string) *int {
-	switch action {
-	case "1":
-		return &ROCK
-	case "2":
-		return &PAPER
-	case "3":
-		return &SCISSORS
-	case "-1":
-		return &SURRENDER
-	default:
+	act, found := ACT_MAP[action]
+	if !found {
 		return nil
 	}
+	return &act
 }
 
+// gameLogic
 func gameLogic(decision1 int, decision2 int) bool {
 	if decision1 == decision2 {
 		return false
@@ -67,6 +68,7 @@ func gameLogic(decision1 int, decision2 int) bool {
 	return false
 }
 
+// checkWinner
 func (m *Match) checkWinner() (*Player, *Player) {
 	switch {
 	case *m.decision1 == SURRENDER:

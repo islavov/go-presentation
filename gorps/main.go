@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net"
 	"strings"
-	rps "./rps"
+	"./rps"
 )
 
 func serve(conn net.Conn, game *rps.Game) error {
@@ -24,7 +24,15 @@ func serve(conn net.Conn, game *rps.Game) error {
 
 	go func() {
 		for {
-			writer.Write([]byte(<-player.Messages))
+			msg := player.ReadMsg()
+			if msg == "" {
+				return
+			}
+			_, err := writer.Write([]byte(msg))
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
 			writer.Flush()
 		}
 	}()
@@ -42,7 +50,6 @@ func serve(conn net.Conn, game *rps.Game) error {
 
 		if err != nil {
 			game.RemovePlayer(player)
-			close(player.Messages)
 			return err
 		}
 	}
