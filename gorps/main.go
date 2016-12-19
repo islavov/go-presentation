@@ -23,17 +23,21 @@ func serve(conn net.Conn, game *rps.Game) error {
 	game.AddPlayer(player)
 
 	go func() {
+		fmt.Println("Opening player message feed ", player.Name)
+		defer fmt.Println("Closing player message feed ", player.Name)
+
 		for {
-			msg := player.ReadMsg()
-			if msg == "" {
+			select {
+			case msg := <- player.Messages:
+				_, err := writer.Write([]byte(msg))
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				writer.Flush()
+			case <- player.Finish:
 				return
 			}
-			_, err := writer.Write([]byte(msg))
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			writer.Flush()
 		}
 	}()
 

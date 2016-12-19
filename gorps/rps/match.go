@@ -3,9 +3,9 @@ package rps
 import (
 	"fmt"
 	"math"
+	"github.com/satori/uuid"
 )
 
-var SURRENDER = -1
 var ROCK = 0
 var PAPER = 1
 var SCISSORS = 2
@@ -13,15 +13,12 @@ var SCISSORS = 2
 const MSG_WEAPON = "Choose your weapon (1: rock, 2:paper, 3:scissors): "
 
 var MSG_MAP = map[int]string{
-	-1: "surrender",
 	0: "rock",
 	1: "paper",
 	2: "scissors",
 }
 
 var ACT_MAP = map[string]int {
-	"": SURRENDER,
-	"-1": SURRENDER,
 	"1": ROCK,
 	"2": PAPER,
 	"3": SCISSORS,
@@ -36,6 +33,7 @@ func msgPlayers(msg string, players ...*Player) {
 
 // Match struct holds the match players and decisions
 type Match struct {
+	id        uuid.UUID
 	game      *Game
 	player1   *Player
 	player2   *Player
@@ -45,7 +43,7 @@ type Match struct {
 
 // NewMatch creates a new match
 func NewMatch(game *Game, player1 *Player, player2 *Player) *Match {
-	return &Match{game: game, player1: player1, player2: player2}
+	return &Match{id: uuid.NewV4(), game: game, player1: player1, player2: player2}
 }
 
 // handleUserAction handles a player
@@ -71,10 +69,6 @@ func gameLogic(decision1 int, decision2 int) bool {
 // checkWinner
 func (m *Match) checkWinner() (*Player, *Player) {
 	switch {
-	case *m.decision1 == SURRENDER:
-		return m.player2, nil
-	case *m.decision2 == SURRENDER:
-		return m.player1, nil
 	case gameLogic(*m.decision1, *m.decision2):
 		return m.player1, m.player2
 	case gameLogic(*m.decision2, *m.decision1):
@@ -87,6 +81,8 @@ func (m *Match) checkWinner() (*Player, *Player) {
 
 // start starts a new match
 func (m *Match) start() {
+	fmt.Println("Begin match ", m.id)
+	defer fmt.Println("End match ", m.id)
 	msgPlayers(MSG_WEAPON, m.player1, m.player2)
 
 	for {
@@ -102,8 +98,13 @@ func (m *Match) start() {
 			if m.decision2 == nil {
 				msgPlayers(MSG_WEAPON, m.player2)
 			}
+		case <- m.player1.Finish:
+			m.game.EndMatch(m.player2, "win")
+			return
+		case <- m.player2.Finish:
+			m.game.EndMatch(m.player1, "win")
+			return
 		default:
-
 			if m.decision1 != nil && m.decision2 != nil {
 				choices := fmt.Sprintf(
 					"%s chose %s and %s chose %s...\n",
@@ -116,20 +117,14 @@ func (m *Match) start() {
 				if winner == nil && loser == nil {
 					msgPlayers("Its a TIE...\n", m.player1, m.player2)
 					msgPlayers(MSG_WEAPON, m.player1, m.player2)
-				}
 
-				if winner != nil {
+					m.decision1 = nil
+					m.decision2 = nil
+				} else {
 					m.game.EndMatch(winner, "win")
-				}
-				if loser != nil {
 					m.game.EndMatch(loser, "lose")
-				}
-				if winner != nil || loser != nil {
 					return
 				}
-
-				m.decision1 = nil
-				m.decision2 = nil
 			}
 		}
 	}

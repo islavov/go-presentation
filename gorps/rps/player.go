@@ -14,15 +14,16 @@ type Player struct {
 	Name     string
 	State    string
 	action   chan string
-	messages chan string
+	Messages chan string
+	Finish   chan string
 }
 
 func NewPlayer(name string) *Player {
-	return &Player{Name: name, action: make(chan string), messages: make(chan string), State: STATE_NEW}
+	return &Player{Name: name, action: make(chan string), Messages: make(chan string), Finish: make(chan string), State: STATE_NEW}
 }
 
 // Act dispatches a user action
-func (p Player) Act(message string) {
+func (p *Player) Act(message string) {
 	p.action <- strings.TrimSpace(message)
 }
 
@@ -33,17 +34,9 @@ func (p *Player) WriteMsg(message string) {
 			fmt.Println("failed to write message: ",message, r)
 		}
 	}()
-	p.messages <- message
+	p.Messages <- message
 }
-
-// ReadMsg reads a message, that was send to the user.
-// Blocks until a message is received - should be used in a separate goroutine
-func (p *Player) ReadMsg() string {
-	return <-p.messages
-}
-
 
 func (p *Player) Leave() {
-	close(p.messages)
-	close(p.action)
+	close(p.Finish)
 }

@@ -65,9 +65,7 @@ func (game Game) AddPlayer(player *Player) {
 
 // removePlayer removes a player from the game
 func (game *Game) removePlayer(action Action) {
-	if action.player.State == STATE_PLAYING {
-		action.player.Act(fmt.Sprintf("%d", SURRENDER))
-	}
+
 	if action.player == game.waiting {
 		game.waiting = nil
 	}
@@ -88,7 +86,7 @@ func (game Game) RemovePlayer(player *Player) {
 
 // startMatch handles request to start a new match
 func (game *Game) startMatch(action Action) {
-	if game.waiting == nil {
+	if game.waiting == nil || game.waiting.Name == action.player.Name {
 		game.waiting = action.player
 		game.waiting.WriteMsg("waiting for another player...\n")
 		game.waiting.State = STATE_WAITING
