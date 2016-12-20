@@ -2,8 +2,8 @@ package rps
 
 import (
 	"fmt"
-	"math"
 	"github.com/satori/uuid"
+	"math"
 )
 
 var ROCK = 0
@@ -18,7 +18,7 @@ var MSG_MAP = map[int]string{
 	2: "scissors",
 }
 
-var ACT_MAP = map[string]int {
+var ACT_MAP = map[string]int{
 	"1": ROCK,
 	"2": PAPER,
 	"3": SCISSORS,
@@ -60,7 +60,7 @@ func gameLogic(decision1 int, decision2 int) bool {
 	if decision1 == decision2 {
 		return false
 	}
-	if math.Mod(float64(decision1 + 3) - float64(decision2), 3) == 1 {
+	if math.Mod(float64(decision1+3)-float64(decision2), 3) == 1 {
 		return true
 	}
 	return false
@@ -78,7 +78,6 @@ func (m *Match) checkWinner() (*Player, *Player) {
 	}
 }
 
-
 // start starts a new match
 func (m *Match) start() {
 	fmt.Println("Begin match ", m.id)
@@ -94,14 +93,14 @@ func (m *Match) start() {
 			}
 
 		case action := <-m.player2.action:
-			m.decision2 = m.handlePlayerAction(m.player2, action);
+			m.decision2 = m.handlePlayerAction(m.player2, action)
 			if m.decision2 == nil {
 				msgPlayers(MSG_WEAPON, m.player2)
 			}
-		case <- m.player1.Finish:
+		case <-m.player1.Finish:
 			m.game.EndMatch(m.player2, "win")
 			return
-		case <- m.player2.Finish:
+		case <-m.player2.Finish:
 			m.game.EndMatch(m.player1, "win")
 			return
 		default:
@@ -129,4 +128,3 @@ func (m *Match) start() {
 		}
 	}
 }
-

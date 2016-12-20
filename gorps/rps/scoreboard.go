@@ -1,25 +1,25 @@
 package rps
 
 import (
-	"io/ioutil"
 	"encoding/json"
 	"fmt"
-	"time"
+	"io/ioutil"
 	"os"
+	"time"
 )
 
 type Score struct {
-	Wins int32
+	Wins    int32
 	Matches int32
 }
 
 type ScoreBoard struct {
-	Scores map[string]*Score
+	Scores    map[string]*Score
 	scorefile string
 }
 
 func NewScoreBoard() *ScoreBoard {
-	scoreboard := ScoreBoard{scorefile: "scoreboard.txt", Scores:map[string]*Score{}}
+	scoreboard := ScoreBoard{scorefile: "scoreboard.txt", Scores: map[string]*Score{}}
 	scoreboard.readScores()
 	go scoreboard.scoreWriter()
 	return &scoreboard
@@ -33,7 +33,6 @@ func (s *ScoreBoard) readScores() {
 
 	json.Unmarshal(data, s.Scores)
 }
-
 
 func (s *ScoreBoard) scoreWriter() {
 	tmpfile := fmt.Sprintf("%s.tmp", s.scorefile)

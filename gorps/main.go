@@ -10,7 +10,22 @@ import (
 
 func writeMsg(writer *bufio.Writer, msg string) error {
 	_, err := writer.Write([]byte(msg + "\n"))
-	return err
+	if err != nil {
+		return err
+	}
+	return writer.Flush()
+}
+
+func readMsg(reader *bufio.Reader) (string, error) {
+	msg, err := reader.ReadString('\n')
+	if err != nil {
+		return "", err
+	}
+	msg = strings.TrimSpace(msg)
+	if err != nil {
+		return "", err
+	}
+	return msg, nil
 }
 
 func readPlayerName(reader *bufio.Reader, writer *bufio.Writer) (string, error) {
@@ -19,16 +34,12 @@ func readPlayerName(reader *bufio.Reader, writer *bufio.Writer) (string, error) 
 		if err != nil {
 			return "", err
 		}
-		name, err := reader.ReadString('\n')
+		msg, err := readMsg(reader)
 		if err != nil {
 			return "", err
 		}
-		name = strings.TrimSpace(name)
-		if name != "" {
-			return name, nil
-		}
+		return msg, nil
 	}
-
 }
 
 func serve(conn net.Conn, game *rps.Game) error {
