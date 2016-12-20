@@ -1,8 +1,8 @@
 package rps
 
 import (
-	"strings"
 	"fmt"
+	"strings"
 )
 
 const STATE_NEW = "new"
@@ -29,9 +29,10 @@ func (p *Player) Act(message string) {
 
 // WriteMsg sends a message to the user
 func (p *Player) WriteMsg(message string) {
+	// TODO: Remove this defer
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("failed to write message: ",message, r)
+			fmt.Println("failed to write message: ", message, r)
 		}
 	}()
 	p.Messages <- message

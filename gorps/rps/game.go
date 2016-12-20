@@ -2,7 +2,7 @@ package rps
 
 import "fmt"
 
-const addPlayer, removePlayer, startMatch, endMatch = "addPlayer", "removePlayer", "startMatch", "removeMatch"
+const addPlayer, removePlayer, startMatch, endMatch = "removePlayer", "addPlayer", "startMatch", "removeMatch"
 
 // Action struct holds a player action
 type Action struct {
@@ -23,7 +23,6 @@ type Game struct {
 	scores  *ScoreBoard
 }
 
-
 // NewGame starts a new game
 func NewGame() *Game {
 	scoreboard := NewScoreBoard()
@@ -31,7 +30,7 @@ func NewGame() *Game {
 		players: []*Player{},
 		waiting: []*Player{},
 		actions: make(chan Action),
-		scores: scoreboard}
+		scores:  scoreboard}
 	go game.cmdloop()
 	return &game
 }
@@ -56,7 +55,6 @@ func (game *Game) cmdloop() {
 	}
 }
 
-
 // addPlayer handles action, that adds a player to the game
 func (game *Game) addPlayer(action Action) {
 	fmt.Printf("Joining: %s\n", action.player.Name)
@@ -75,7 +73,7 @@ func (game *Game) removePlayer(action Action) {
 	for idx, player := range game.players {
 		if player == action.player {
 			fmt.Printf("Leaving: %s\n", action.player.Name)
-			game.players = append(game.players[:idx], game.players[idx + 1:]...)
+			game.players = append(game.players[:idx], game.players[idx+1:]...)
 			break
 		}
 	}
@@ -121,6 +119,7 @@ func (game *Game) endMatch(action Action) {
 	game.startMatch(action)
 
 }
+
 // EndMatch ends a match
 func (game Game) EndMatch(player *Player, param string) {
 	game.actions <- Action{player: player, action: endMatch, param: param}
@@ -132,7 +131,7 @@ func (game *Game) getOpponent(player *Player) *Player {
 		if waiting == player || waiting.Name == player.Name {
 			continue
 		}
-		game.waiting = append(game.waiting[:idx], game.waiting[idx + 1:]...)
+		game.waiting = append(game.waiting[:idx], game.waiting[idx+1:]...)
 		return waiting
 	}
 	return nil
@@ -143,12 +142,11 @@ func (game *Game) addWaiting(player *Player) {
 	game.waiting = append(game.waiting, player)
 }
 
-
 // removeWaiting removes a player from the waitlist
 func (game *Game) removeWaiting(player *Player) {
 	for idx, waiting := range game.waiting {
 		if waiting == player {
-			game.waiting = append(game.waiting[:idx], game.waiting[idx + 1:]...)
+			game.waiting = append(game.waiting[:idx], game.waiting[idx+1:]...)
 			return
 		}
 	}

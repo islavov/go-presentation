@@ -8,14 +8,24 @@ import (
 	"strings"
 )
 
-func readPlayerName(reader *bufio.Reader, writer *bufio.Writer) string {
+func writeMsg(writer *bufio.Writer, msg string) error {
+	_, err := writer.Write([]byte(msg + "\n"))
+	return err
+}
+
+func readPlayerName(reader *bufio.Reader, writer *bufio.Writer) (string, error) {
 	for {
-		writer.Write([]byte("Enter player name: "))
-		writer.Flush()
-		name, _ := reader.ReadString('\n')
+		err := writeMsg(writer, "LOGIN")
+		if err != nil {
+			return "", err
+		}
+		name, err := reader.ReadString('\n')
+		if err != nil {
+			return "", err
+		}
 		name = strings.TrimSpace(name)
 		if name != "" {
-			return name
+			return name, nil
 		}
 	}
 
@@ -24,14 +34,18 @@ func readPlayerName(reader *bufio.Reader, writer *bufio.Writer) string {
 func serve(conn net.Conn, game *rps.Game) error {
 	defer conn.Close()
 
-	fmt.Printf("%+v\n", conn.RemoteAddr())
+	fmt.Printf("Incoming connection: %+v\n", conn.RemoteAddr())
 	reader := bufio.NewReader(conn)
 	writer := bufio.NewWriter(conn)
 
-	name := readPlayerName(reader, writer)
+	name, err := readPlayerName(reader, writer)
+	if err != nil {
+		fmt.Printf("Error on login: %s", name)
+	}
 	player := rps.NewPlayer(name)
 	game.AddPlayer(player)
 
+	// TODO: Pull function
 	go func() {
 		fmt.Println("Opening player message feed ", player.Name)
 		defer fmt.Println("Closing player message feed ", player.Name)
@@ -53,6 +67,7 @@ func serve(conn net.Conn, game *rps.Game) error {
 
 	game.StartMatch(player)
 
+	// TODO: Pull function
 	for {
 		message, err := reader.ReadString('\n')
 		if player.State == rps.STATE_PLAYING && message != "" {
