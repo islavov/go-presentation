@@ -3,9 +3,9 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/emou/go-presentation/gorps/rps"
 	"net"
 	"strings"
-	"./rps"
 )
 
 func readPlayerName(reader *bufio.Reader, writer *bufio.Writer) string {
@@ -38,14 +38,14 @@ func serve(conn net.Conn, game *rps.Game) error {
 
 		for {
 			select {
-			case msg := <- player.Messages:
+			case msg := <-player.Messages:
 				_, err := writer.Write([]byte(msg))
 				if err != nil {
 					fmt.Println(err)
 					return
 				}
 				writer.Flush()
-			case <- player.Finish:
+			case <-player.Finish:
 				return
 			}
 		}
