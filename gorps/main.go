@@ -81,14 +81,15 @@ func serve(conn net.Conn, game *rps.Game) error {
 	// TODO: Pull function
 	for {
 		message, err := reader.ReadString('\n')
-		if player.State == rps.STATE_PLAYING && message != "" {
-			player.Act(message)
-		}
-
 		if err != nil {
 			game.RemovePlayer(player)
 			return err
 		}
+
+		if player.State == rps.STATE_PLAYING && message != "" {
+			player.Act(message)
+		}
+
 	}
 }
 

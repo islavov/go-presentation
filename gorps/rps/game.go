@@ -117,7 +117,6 @@ func (game *Game) endMatch(action Action) {
 	win := action.param == "win"
 	game.scores.Add(action.player.Name, win)
 	game.startMatch(action)
-
 }
 
 // EndMatch ends a match
