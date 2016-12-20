@@ -38,35 +38,72 @@ https://golang.org/doc/install#testing
 $ go get github.com/emou/go-presentation/gorps
 ```
 
+Ако искате, можете да стартирате сървъра с:
+
 ### main.go
 
-Нека създадем `main.go`, където ще напишем кода на клиента със съдържание празна функция:
+Нека създадем директория `gorpsclient` с един файл `main.go`, където ще напишем кода на клиента.
+
+```
+$ mkdir $GOPATH/src/github.com/emou/go-presentation/gorpsclient/
+$ cd $GOPATH/src/github.com/emou/go-presentation/gorpsclient/
+$ touch main.go
+```
+
+Засега, нека добавим една празна `main` функция.
 
 ```
 package main
 
+import (
+"fmt"
+"net"
+)
+
 func main() {
+  serverAddr := "localhost:9000"
+  _, err := net.Dial("tcp", serverAddr)
+  if err != nil {
+    panic(fmt.Sprintf("Error connectinng to %s: %s", serverAddr, err))
+  }
 }
 ```
 
 Да проверим, че се билдва и работи:
+```
+$ go run main.go
+```
+
+Би трябвало програмата да се паникьоса
+```
+panic: Error connectinng to localhost:9000: dial tcp 127.0.0.1:9000: getsockopt: connection refused
+...
+```
+
+В друг терминал, можете да пуснете сървър локално:
 
 ```
-go run main.go
+gorps
 ```
+
 
 ### Свързване към сървъра
 
 Ще използваме пакета от стандартната библиотека [net](https://golang.org/pkg/net/), за да
 се свържем към сървъра.
 
+Можете да пуснете локално сървъра:
+
+```
+gorps
+```
+
 ```
 func main() {
-  conn, err := net.Dial("tcp", "golang.org:80")
+  conn, err := net.Dial("tcp", "localhost:9000")
   if err != nil {
     // handle error
   }
-  fmt.Fprintf(conn, "GET / HTTP/1.0\r\n\r\n")
 }
 ```
 
