@@ -12,22 +12,26 @@ type Action struct {
 }
 
 func (a Action) String() string {
-	return fmt.Sprintf("<%s:%s:%s>", a.player.Name,  a.action, a.param)
+	return fmt.Sprintf("<%s:%s:%s>", a.player.Name, a.action, a.param)
 }
 
 // Game struct holds the action channel and players
 type Game struct {
 	actions chan Action
 	players []*Player
-	waiting *Player
-	scores *ScoreBoard
+	waiting []*Player
+	scores  *ScoreBoard
 }
 
 
 // NewGame starts a new game
 func NewGame() *Game {
 	scoreboard := NewScoreBoard()
-	var game = Game{players: []*Player{}, actions: make(chan Action), scores: scoreboard}
+	var game = Game{
+		players: []*Player{},
+		waiting: []*Player{},
+		actions: make(chan Action),
+		scores: scoreboard}
 	go game.cmdloop()
 	return &game
 }
@@ -67,10 +71,7 @@ func (game Game) AddPlayer(player *Player) {
 
 // removePlayer removes a player from the game
 func (game *Game) removePlayer(action Action) {
-
-	if action.player == game.waiting {
-		game.waiting = nil
-	}
+	game.removeWaiting(action.player)
 	for idx, player := range game.players {
 		if player == action.player {
 			fmt.Printf("Leaving: %s\n", action.player.Name)
@@ -88,23 +89,22 @@ func (game Game) RemovePlayer(player *Player) {
 
 // startMatch handles request to start a new match
 func (game *Game) startMatch(action Action) {
-	if game.waiting == nil || game.waiting.Name == action.player.Name {
-		game.waiting = action.player
-		game.waiting.WriteMsg("waiting for another player...\n")
-		game.waiting.State = STATE_WAITING
+	waiting := game.getOpponent(action.player)
+	if waiting == nil {
+		game.addWaiting(action.player)
+		action.player.WriteMsg("waiting for another player...\n")
+		action.player.State = STATE_WAITING
 	} else {
 
-		var msg = fmt.Sprintf("Duel between %s and %s. FIGHT!\n",
-			game.waiting.Name, action.player.Name)
-		game.waiting.WriteMsg(msg)
+		var msg = fmt.Sprintf("Duel between %s and %s. FIGHT!\n", waiting.Name, action.player.Name)
+		waiting.WriteMsg(msg)
 		action.player.WriteMsg(msg)
 
-		game.waiting.State = STATE_PLAYING
+		waiting.State = STATE_PLAYING
 		action.player.State = STATE_PLAYING
 
-		match := NewMatch(game, action.player, game.waiting)
+		match := NewMatch(game, action.player, waiting)
 		go match.start()
-		game.waiting = nil
 	}
 }
 
@@ -124,4 +124,33 @@ func (game *Game) endMatch(action Action) {
 // EndMatch ends a match
 func (game Game) EndMatch(player *Player, param string) {
 	game.actions <- Action{player: player, action: endMatch, param: param}
+}
+
+// getOpponent returns an opponent for this player or nil
+func (game *Game) getOpponent(player *Player) *Player {
+	for idx, waiting := range game.waiting {
+		if waiting == player || waiting.Name == player.Name {
+			continue
+		}
+		game.waiting = append(game.waiting[:idx], game.waiting[idx + 1:]...)
+		return waiting
+	}
+	return nil
+}
+
+// addWaiting adds a player to the waitlist
+func (game *Game) addWaiting(player *Player) {
+	game.waiting = append(game.waiting, player)
+}
+
+
+// removeWaiting removes a player from the waitlist
+func (game *Game) removeWaiting(player *Player) {
+	for idx, waiting := range game.waiting {
+		if waiting == player {
+			game.waiting = append(game.waiting[:idx], game.waiting[idx + 1:]...)
+			return
+		}
+	}
+
 }
