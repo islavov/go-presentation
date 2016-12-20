@@ -8,7 +8,7 @@ import (
 	"./rps"
 )
 
-func readPlayerName(reader bufio.Reader, writer bufio.Writer) string {
+func readPlayerName(reader *bufio.Reader, writer *bufio.Writer) string {
 	for {
 		writer.Write([]byte("Enter player name: "))
 		writer.Flush()
