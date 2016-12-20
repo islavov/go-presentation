@@ -68,7 +68,7 @@ func serve(conn net.Conn, game *rps.Game) error {
 
 func main() {
 	game := rps.NewGame()
-	listener, err := net.Listen("tcp", ":8080")
+	listener, err := net.Listen("tcp", ":9000")
 
 	fmt.Println("Listening on", listener.Addr())
 	if err != nil {
