@@ -1,0 +1,6 @@
+hash: 78e8965adbf9da09e6be6ed88bef9a253e5da220de2e18459e8344177e75c4ea
+updated: 2016-12-20T15:15:39.608316255+02:00
+imports:
+- name: github.com/satori/uuid
+  version: 879c5887cd475cd7864858769793b2ceb0d44feb
+testImports: []
